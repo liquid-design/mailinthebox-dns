@@ -1,0 +1,16 @@
+---
+- name: Fetch current DNS records for zone
+  uri:
+    url: "{{ mitb_api.base_url }}/admin/dns/custom/{{ mitb_zone }}"
+    method: GET
+    headers:
+      Authorization: "Basic {{ authorization_token }}"
+      Content-Type: application/json
+    return_content: true
+    status_code: 200
+  check_mode: no
+  register: mitb_dns_get
+
+- name: Parse current DNS records
+  set_fact:
+    current_dns_records: "{{ mitb_dns_get.json | default([]) }}"

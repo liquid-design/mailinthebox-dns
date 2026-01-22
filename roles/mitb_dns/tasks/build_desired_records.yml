@@ -1,0 +1,19 @@
+---
+- name: Build desired A-record FQDNs from YAML
+  set_fact:
+    desired_a_fqdns: >-
+      {{
+        desired_a_fqdns | default([]) + [
+          mitb_zone
+          if item.name == '@'
+          else item.name ~ '.' ~ mitb_zone
+        ]
+      }}
+  loop: "{{ mitb_dns_records }}"
+  when: item.type == 'A'
+
+- name: Build list of desired A-record labels from YAML
+  set_fact:
+    desired_a_labels: "{{ desired_a_labels | default([]) + [ item.name ] }}"
+  loop: "{{ mitb_dns_records }}"
+  when: item.type == 'A'

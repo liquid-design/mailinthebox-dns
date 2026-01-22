@@ -1,0 +1,46 @@
+---
+- name: Build list of A-records from zonefile
+  set_fact:
+    zonefile_a_records: "{{ zonefile_a_records | default([]) + [ record ] }}"
+  vars:
+    record:
+      name: "{{ item[0] }}"
+      fqdn: >-
+        {{
+          mitb_zone
+          if item[0] == '@'
+          else item[0] ~ '.' ~ mitb_zone
+        }}
+  loop: "{{ zonefile_tokens }}"
+  when:
+    - item | length >= 3
+    - item[1] == 'IN'
+    - item[2] == 'A'
+
+
+- name: Determine A-records to prune
+  set_fact:
+    records_to_prune: >-
+      {{
+        zonefile_a_records
+        | rejectattr('name', 'in', desired_a_labels)
+        | rejectattr('name', 'in', mitb_dns_prune_exclude | default([]))
+        | map(attribute='fqdn')
+        | list
+      }}
+
+- name: Show records that will be pruned
+  debug:
+    msg: "Will delete {{ item }}"
+  loop: "{{ records_to_prune }}"
+  when: mitb_dns_prune | default(false)
+
+- name: Delete obsolete A-records
+  uri:
+    url: "{{ mitb_api.base_url }}/admin/dns/custom/{{ item }}"
+    method: DELETE
+    headers:
+      Authorization: "Basic {{ authorization_token }}"
+    status_code: [200, 404]
+  loop: "{{ records_to_prune }}"
+  when: mitb_dns_prune | default(false)

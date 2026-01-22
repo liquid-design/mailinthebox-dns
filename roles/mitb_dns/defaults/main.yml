@@ -1,0 +1,5 @@
+---
+mib_email: "me@liquid-hosting.be"
+mib_api_key: "1dacc5a7a56b17dd94b6ba02eda53a2c176cf2e3f500fcbc65bd9048fe63a52a"
+mib_api_url: "https://mail.liquid-hosting.be/admin"
+ttl: 3600

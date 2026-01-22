@@ -1,0 +1,35 @@
+---
+# Encode API key/email
+- name: Encode Mail-in-a-Box credentials
+  set_fact:
+    authorization_token: "{{ (mib_email + ':' + mib_api_key) | b64encode }}"
+
+# Fetch current records
+#- include_tasks: fetch_current_records.yml
+
+# Sync records
+#- include_tasks: sync_records.yml
+
+# Prune records
+#- name: Prune obsolete DNS records
+#  include_tasks: prune_records.yml
+#  when: mitb_dns_prune | default(false) | bool
+
+- name: Fetch zonefile
+  include_tasks: fetch_zonefile.yml
+
+- name: Parse zonefile
+  include_tasks: parse_zonefile.yml
+
+- name: Sync DNS records (create/update)
+  include_tasks: sync_records.yml
+
+- name: Build desired record list
+  include_tasks: build_desired_records.yml
+
+- name: Prune obsolete records
+  include_tasks: prune_records.yml
+  when: mitb_dns_prune | bool  
+
+- debug:
+    var: mitb_dns_records

@@ -1,0 +1,6 @@
+- name: Sync DNS records to Mail-in-a-Box
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - mitb_dns

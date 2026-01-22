@@ -1,0 +1,32 @@
+---
+- name: Compute FQDN
+  set_fact:
+    fqdn: >-
+      {{
+        mitb_zone
+        if dns_record.name == '@'
+        else dns_record.name ~ '.' ~ mitb_zone
+      }}
+
+- name: Find existing record
+  set_fact:
+    existing_record: >-
+      {{
+        current_dns_records
+        | selectattr('qname', 'equalto', fqdn)
+        | selectattr('rtype', 'equalto', dns_record.type)
+        | list
+        | first
+        | default(None)
+      }}
+
+- name: Create or update DNS record (MIAB native API)
+  uri:
+    url: "{{ mitb_api.base_url }}/admin/dns/custom/{{ fqdn }}"
+    method: PUT
+    headers:
+      Authorization: "Basic {{ authorization_token }}"
+      Content-Type: application/json
+    body: "{{ dns_record.value }}"
+    status_code: 200
+  when: existing_record is none or existing_record.value != dns_record.value

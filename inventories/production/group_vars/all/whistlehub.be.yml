@@ -1,0 +1,22 @@
+mitb_zone: whistlehub.be
+mitb_dns_prune: true
+mitb_api:
+  base_url: https://mail.liquid-hosting.be
+
+mitb_dns_prune_exclude:
+  - autoconfig
+  - autodiscover
+  - mta-sts
+  - mail
+
+
+mitb_dns_records:
+
+  # A / AAAA
+  - name: "@"
+    type: A
+    value: 159.65.202.9
+
+  - name: "www"
+    type: A
+    value: 159.65.202.9

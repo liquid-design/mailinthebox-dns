@@ -1,0 +1,6 @@
+---
+- name: Sync DNS records
+  include_tasks: sync_single_record.yml
+  loop: "{{ mitb_dns_records }}"
+  loop_control:
+    loop_var: dns_record

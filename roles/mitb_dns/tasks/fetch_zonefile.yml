@@ -1,0 +1,15 @@
+---
+- name: Fetch authoritative zonefile
+  uri:
+    url: "{{ mitb_api.base_url }}/admin/dns/zonefile/{{ mitb_zone }}"
+    method: GET
+    headers:
+      Authorization: "Basic {{ authorization_token }}"
+    return_content: true
+    status_code: 200
+  check_mode: no
+  register: mitb_zonefile_raw
+
+- name: Split zonefile into lines
+  set_fact:
+    zonefile_lines: "{{ mitb_zonefile_raw.content.splitlines() }}"

@@ -1,0 +1,21 @@
+---
+- name: Parse zonefile lines into tokens
+  set_fact:
+    zonefile_tokens: "{{ zonefile_lines | map('split') | list }}"
+
+- name: Build list of A-record FQDNs from zonefile
+  set_fact:
+    zonefile_a_fqdns: "{{ zonefile_a_fqdns | default([]) + [ fqdn ] }}"
+  vars:
+    label: "{{ item[0] }}"
+    fqdn: >-
+      {{
+        mitb_zone
+        if label == '@'
+        else label ~ '.' ~ mitb_zone
+      }}
+  loop: "{{ zonefile_tokens }}"
+  when:
+    - item | length >= 3
+    - item[1] == 'IN'
+    - item[2] == 'A'

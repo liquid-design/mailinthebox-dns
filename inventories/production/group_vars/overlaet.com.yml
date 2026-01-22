@@ -1,0 +1,11 @@
+---
+dns_records:
+  - type: "A"
+    name: "tmp1.overlaet.com"
+    value: "165.232.93.135"
+  - type: "A"
+    name: "tmp10.overlaet.com"
+    value: "165.232.93.140"
+  - type: "CNAME"
+    name: "mail.overlaet.com"
+    value: "overlaet.com."
